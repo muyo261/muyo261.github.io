@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .tab-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 100px;
+    }
+
+    .tab-btn {
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 50px;
+      transition: all 0.2s;
+      color: black;
+    }
+
+    .tab-btn:hover { background-color: #f5f5f5; border-color: #999; }
+    .tab-btn.active { background-color: #4271ff; color: #fff; border-color: black; }
+
+    .content-box {
+      display: flex;             
+      align-items: flex-start;   
+      gap: 30px;                 
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .content-row {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .content-box a {
+      text-decoration: none; 
+      color: inherit;         
+      transition: color 0.3s; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ul {
+      padding-left: 20px;
+      line-height: 2.0;
+      margin-bottom: 50px;
+    }
+
+    .content-box img {
+      margin: 0;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 20px;
+    }
+
+    .content-box p {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .media-flex {
+    display: flex;
+    align-items: flex-start; 
+    gap: 30px; 
+    margin: 30px 0; }
+
+    .media-image {
+    flex-shrink: 0; 
+    width: 200px; }
+    
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">☕ 카페</div>
+
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="toggleDistrict('shinjuku', this)">신주쿠구</button>
+      <button class="tab-btn" onclick="toggleDistrict('shibuya', this)">시부야구</button>
+      <button class="tab-btn" onclick="toggleDistrict('chiyoda', this)">치요다구</button>
+      <button class="tab-btn" onclick="toggleDistrict('minato', this)">미나토구</button>
+      <button class="tab-btn" onclick="toggleDistrict('taito', this)">다이토구</button>
+      <button class="tab-btn" onclick="toggleDistrict('chuo', this)">주오구</button>
+      <button class="tab-btn" onclick="toggleDistrict('sumida', this)">스미다구</button>
+      <button class="tab-btn" onclick="toggleDistrict('koto', this)">고토구</button>
+    </div>
+
+    <div id="shinjuku" class="content-box" style="display: block;">
+        
+        <h2>신주쿠구 카페</h2>
+        <div class="content-row">
+            <img src="images/cafe/shinjuku1.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>올 시즌즈 커피</li>
+                <p>주소: 일본 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 2 Chome-7-7 1F</p>
+                <p>⭐별점: 4.4</p>
+                <p>영업 시간: 09:00 ~ 19:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/shinjuku2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>카페 알리야</li>
+                <p>주소: 일본 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome-1-17 ビル山本 B1F</p>
+                <p>⭐별점: 4.3</p>
+                <p>영업 시간: 09:00 ~ 20:30</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/shinjuku3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>브루클린 팔러 신주쿠</li>
+                <p>주소: 일본 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome-1-26 マルイ アネックス B1F</p>
+                <p>⭐별점: 4.0</p>
+                <p>영업 시간: 12:00 ~ 23:00 (주말엔 30분 일찍 오픈)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="shibuya" class="content-box" style="display: none;">
+      <h2>시부야구 카페</h2>
+      <div class="content-row">
+            <img src="images/cafe/shibuya1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>후글렌 도쿄 시부야</li>
+                <p>주소: 1 Chome-16-11 Tomigaya, Shibuya, Tokyo 151-0063 일본</p>
+                <p>⭐별점: 4.3</p>
+                <p>영업 시간: 07:00 ~ 13:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+        
+        <div class="content-row">
+            <img src="images/cafe/shibuya2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>리틀 냅 커피 스탠드</li>
+                <p>주소: 5 Chome-65-4 Yoyogi, Shibuya, Tokyo 151-0053 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>영업 시간: 09:00 ~ 19:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/shibuya3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>Whitely</li>
+                <p>주소: 일본 〒150-0041 Tokyo, Shibuya, Jinnan, 1 Chome-6-14 ジョルディビル 1F</p>
+                <p>⭐별점: 4.5</p>
+                <p>영업 시간: 10:30 ~ 22:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="chiyoda" class="content-box" style="display: none;">
+      <h2>치요다구 맛집</h2>
+      <div class="content-row">
+            <img src="images/cafe/chiyoda1.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>고양이카페 MOCHA 아키하바라</li>
+                <p>주소: 일본 〒101-0021 Tokyo, Chiyoda City, Sotokanda, 4 Chome-4-3 아키바 Sil 빌딩 2階</p>
+                <p>⭐별점: 4.1</p>
+                <p>영업 시간: 10:00 ~ 21:00</p>
+                <p>휴무일: 없음</p>
+                <p>10분당 250엔 (주말, 공휴일은 350엔)</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/chiyoda2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>메이드리밍 아이돌도리</li>
+                <p>주소: 일본 〒101-0021 Tokyo, Chiyoda City, Sotokanda, 4 Chome-4-2 共益外神田ビル 4F</p>
+                <p>⭐별점: 4.9</p>
+                <p>영업 시간: 11:30 ~ 23:00</p>
+                <p>휴무일: 없음</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/chiyoda3.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>토리바 커피</li>
+                <p>주소: 일본 〒104-0028 Tokyo, Chuo City, Yaesu, 2 Chome-1-1 YANMAR TOKYO B1F</p>
+                <p>⭐별점: 4.2</p>
+                <p>영업 시간: 08:00 ~ 19:00 (주말: 10:00 ~ 20:00)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+      </div>
+
+    <div id="minato" class="content-box" style="display: none;">
+      <h2>미나토구 맛집</h2>
+      <div class="content-row">
+            <img src="images/cafe/minato1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>%아라비카 도쿄 아자부다이힐스</li>
+                <p>주소: 일본 〒105-0001 Tokyo, Minato City, Toranomon, 5 Chome-9-1 ガーデンプラザA B B1F</p>
+                <p>⭐별점: 4.2</p>
+                <p>영업 시간: 08:00 ~ 20:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/minato2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>니노 카페</li>
+                <p>주소: 일본 〒107-0062 Tokyo, Minato City, Minamiaoyama, 1 Chome-25-1 Bronze 南青山</p>
+                <p>⭐별점: 4.1</p>
+                <p>영업 시간: 09:00 ~ 22:00</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+      <div class="content-row">
+            <img src="images/cafe/minato3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>La Maison Shirokane Grand Main Store</li>
+                <p>주소: 일본 〒108-0072 Tokyo, Minato City, Shirokane, 1 Chome-27-6 白金高輪ステーションビル 1 階</p>
+                <p>⭐별점: 4.2</p>
+                <p>영업 시간: 11:00 ~ 19:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="taito" class="content-box" style="display: none;">
+      <h2>다이토구 맛집</h2>
+      <div class="content-row">
+            <img src="images/cafe/taito1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>카페 하레쿠라</li>
+                <p>주소: 3 Chome-34-2 Asakusa, Taito City, Tokyo 111-0032 일본</p>
+                <p>⭐별점: 4.2</p>
+                <p>영업 시간: 07:00 ~ 13:00 (월요일만 10:00)</p>
+                <p>휴무일: 목요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/taito2.jpeg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>커피 무라사키</li>
+                <p>주소: 7 Chome-14-6 Ueno, Taito City, Tokyo 110-0005 일본</p>
+                <p>⭐별점: 4.9</p>
+                <p>영업 시간: 09:00 ~ 17:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/taito3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>페브러리 카페</li>
+                <p>주소: 1 Chome-9-8 Komagata, Taito City, Tokyo 111-0043 일본</p>
+                <p>⭐별점: 4.4</p>
+                <p>영업 시간: 08:15 ~ 17:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/taito4.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>푸글렌 아사쿠사</li>
+                <p>주소: 2 Chome-6-15 Asakusa, Taito City, Tokyo 111-0032 일본</p>
+                <p>⭐별점: 4.1</p>
+                <p>영업 시간: 08:00 ~ 21:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+      </div>
+
+      <div id="chuo" class="content-box" style="display: none;">
+      <h2>주오구 맛집</h2>
+      <div class="content-row">
+            <img src="images/cafe/chuo1.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>터렛 커피</li>
+                <p>주소: 2 Chome-12-6 Tsukiji, Chuo City, Tokyo 104-0045 일본</p>
+                <p>⭐별점: 4.6</p>
+                <p>영업 시간: 07:00 ~ 17:00 (일요일은 16:00)</p>
+                <p>휴무일: 수요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/chuo2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>메지 카페</li>
+                <p>주소: 4 Chome-11-7 Tsukiji, Chuo City, Tokyo 104-0045 일본</p>
+                <p>⭐별점: 4.8</p>
+                <p>영업 시간: 08:30 ~ 15:00</p>
+                <p>휴무일: 수요일, 목요일, 금요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/chuo3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>카페 드 람브르</li>
+                <p>주소: 8 Chome-10-15 Ginza, Chuo City, Tokyo 104-0061 일본</p>
+                <p>⭐별점: 4.3</p>
+                <p>영업 시간: 11:00 ~ 19:30 (일요일은 17:30)</p>
+                <p>휴무일: 월요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/chuo4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>카페 카루모</li>
+                <p>주소: 25-8 Nihonbashihakozakicho, Chuo City, Tokyo 103-0015 일본</p>
+                <p>⭐별점: 4.6</p>
+                <p>영업 시간: 08:00 ~ 17:00</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="sumida" class="content-box" style="display: none;">
+      <h2>스미다구 맛집</h2>
+      <div class="content-row">
+            <img src="images/cafe/sumida1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>스카이트리 카페 350 오시아게</li>
+                <p>주소: 일본 〒131-8634 Tokyo, Sumida City, Oshiage, 1 Chome-1-2 350 天望デッキ フロア</p>
+                <p>⭐별점: 4.0</p>
+                <p>영업 시간: 10:00 ~ 22:00 (주말은 오픈 09:00)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/sumida2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>언리미티드 커피 바</li>
+                <p>주소: 1 Chome-18-2 Narihira, Sumida City, Tokyo 130-0002 일본</p>
+                <p>⭐별점: 4.4</p>
+                <p>영업 시간: 12:00 ~ 18:00 / 주말: 10:30 ~ 19:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="koto" class="content-box" style="display: none;">
+      <h2>고토구 맛집</h2>
+    <div class="content-row">
+            <img src="images/cafe/koto1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>올프레소 에스프레소 도쿄 로스터리 & 카페</li>
+                <p>주소: 3 Chome-7-2 Hirano, Koto City, Tokyo 135-0023 일본</p>
+                <p>⭐별점: 4.2</p>
+                <p>영업 시간: 09:00 ~ 17:00 / 주말: 10:00 ~ 18:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/koto2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>LE CAFE KODEN</li>
+                <p>주소: 일본 〒135-0041 Tokyo, Koto City, Fuyuki, 6-22 ロンキン東亜</p>
+                <p>⭐별점: 4.6</p>
+                <p>영업 시간: 11:00 ~ 17:30 (주말은 18:00)</p>
+                <p>휴무일: 수요일, 목요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/koto3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>Hop & Steps Cafe</li>
+                <p>주소: 1 Chome-2-1 Aomi, Koto City, Tokyo 135-0064 일본</p>
+                <p>⭐별점: 4.0</p>
+                <p>영업 시간: 10:00 ~ 12:00 / 13:00 ~ 18:00</p>
+                <p>휴무일: 월요일, 화요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/cafe/koto4.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>Tiny Paradise Coffee</li>
+                <p>주소: 101 1 Chome-26-12 Tomioka, Koto City, Tokyo 135-0047 일본</p>
+                <p>⭐별점: 4.7</p>
+                <p>영업 시간: 08:00 ~ 19:00</p>
+                <p>휴무일: 월요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function toggleDistrict(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>

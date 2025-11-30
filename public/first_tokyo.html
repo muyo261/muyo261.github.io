@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg_tour.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .tab-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 100px;
+    }
+
+    .tab-btn {
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 50px;
+      transition: all 0.2s;
+      color: black;
+    }
+
+    .tab-btn:hover { background-color: #f5f5f5; border-color: #999; }
+    .tab-btn.active { background-color: #4271ff; color: #fff; border-color: black; }
+
+    .content-box {
+      display: none;
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .content-box a {
+      text-decoration: none; 
+      color: inherit;         
+      transition: color 0.3s; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ul {
+      padding-left: 20px;
+      line-height: 2.0;
+    }
+
+    .content-box img {
+      display: block;
+      margin: 50px auto;
+      max-width: 100%;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 20px;
+    }
+
+    .content-box p {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">✈️ 일본 여행이 처음이라면</div>
+
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="showContent('entry', this)">입국</button>
+      <button class="tab-btn" onclick="showContent('transport', this)">대중교통</button>
+      <button class="tab-btn" onclick="showContent('culture', this)">문화</button>
+    </div>
+
+    <div id="entry" class="content-box" style="display: block;">
+      <h2>입국 필수 정보</h2>
+      <div>
+        <img src="images/visit_japan.png" style="width: 750px;">
+      </div>
+      <ul>
+        <li>Visit Japan Web으로 입국 전 온라인 등록 필수</li>
+        <p>입국, 귀국 전 계정 생성 후 일정을 등록한 뒤, 일본 도착시 QR 코드를 표시</p>
+        <a href="https://services.digital.go.jp/ko/visit-japan-web/"><p>➜ Visit Japan Web 등록하러 바로가기</p></a>
+      </ul>
+    </div>
+
+    <div id="transport" class="content-box">
+      <h2>교통 이용 팁</h2>
+      <ul>
+        <li>🚕택시</li>
+        <p>자동문이 대부분으로 손잡이를 잡아당기지 않고 기다리기</p>
+        <p>한국과 달리 기본 요금이 굉장히 비싸고 같은 거리라도 지역마다 요금이 다름에 유의</p>
+
+        <li style="margin-top: 200px;">🚍버스</li>
+        <div>
+          <img src="images/bus.png" style="width: 750px;">
+        </div>
+        <p>뒤로 탑승 후 앞으로 내리는 방식</p>
+        <p>이동 거리에 따른 요금 계산</p>
+        <p>뒤에 탑승할 때 일본 교통카드(pasmo, suica 등)를 태그하거나 종이를 뽑은 후 앞에서 내릴 때 다시 교통카드 태그 혹은 현금으로 계산</p>
+      </ul>
+    </div>
+
+    <div id="culture" class="content-box">
+      <h2>문화 & 에티켓</h2>
+      <ul>
+        <li>현금</li>
+        <p>카드가 안 되는 곳이 많아 현금이 필수</p>
+        <p> 💡꿀팁! 동전이 많이 생겨 동전 지갑이 있으면 좋음</p>
+        <div>
+          <a href="https://www.coupang.com/np/search?q=%EC%9D%BC%EB%B3%B8%20%EB%8F%99%EC%A0%84%EC%A7%80%EA%B0%91&channel=auto&traceId=mibpgsqr"><img src="images/japan_coin.png" style="width: 200px; margin: 0 0 20px 50px;">
+            <p>➜ 동전지갑 사러 가기</p></a>
+        </div>
+
+        <li>좌측 통행</li>
+        <p>에스컬레이터 왼쪽 줄에 서기</p>
+
+        <li>전압</li>
+        <p>돼지코 필수</p>
+        <div>
+          <a href="https://www.coupang.com/np/search?q=110v%20%EB%8F%BC%EC%A7%80%EC%BD%94&channel=auto&traceId=mibph6gl"><img src="images/110v.png" style="width: 200px; margin: 20px 0 20px 50px;">
+            <p>➜ 110v 사러 가기</p></a>
+        </div>
+
+        <li>🚥신호등</li>
+        <p>⚠️우리나라와 달리 초록불이 깜빡이면 곧바로 꺼지니 건너면 위험⚠️</p>
+
+        <li>음식점</li>
+        <p>패스트푸드점을 제외하고 일반 음식점은 점원 안내를 받아 앉아야 함</p>
+        <p>음식점 들어가서 서서 점원 안내 기다리기</p>
+      </ul>
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function showContent(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/main_bg.png') no-repeat center top;
+      background-size: cover;   
+    }
+
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+      background: transparent;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .passport-signup {
+      display: flex;
+      width: 1000px;
+      height: 900px;              /* ← 로그인보다 높이 증가 */
+      background-color: #fff;
+      border: 3px solid black;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      overflow: hidden;
+
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+    }
+
+    .passport-left {
+      width: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 100px;
+    }
+
+    .passport-left img {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+    }
+
+    /* 입력 영역 */
+    #signupForm {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #signupForm input,
+    #signupForm button {
+      width: 70%;
+      margin-bottom: 30px;
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 5px;
+      display: block;
+    }
+
+    #signupForm input {
+      border: 1px solid #ccc;
+    }
+
+    #signupForm button {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #signupForm button:hover {
+      background-color: #9ac8fd;
+    }
+
+    .id-box {
+      width: 70%;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .id-box input {
+      flex: 2;  
+      padding: 15px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .check-btn {
+      flex: 1;             
+      background-color: #5cabff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .check-btn:hover {
+      background-color: #9ac8fd;
+    }
+
+    #signupMessage {
+      color: red;
+      font-size: 18px;
+    }
+
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+   <div class="passport-signup">
+    <div class="passport-left">
+      <img src="images/freepik_icon.png" alt="사용자 아이콘">
+    </div>
+
+    <form id="signupForm">
+
+      <input type="text" name="name" placeholder="별명" required>
+
+      <!-- 아이디 + 중복확인 -->
+      <div class="id-box">
+        <input type="text" name="username" placeholder="아이디" required>
+        <button type="button" class="check-btn" id="checkIdBtn">중복확인</button>
+      </div>
+
+      <input type="password" name="password" 
+       placeholder="비밀번호 (8~16자리, 영문+숫자)" 
+       required
+       pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$"
+       title="비밀번호는 8~16자리이며, 영문과 숫자를 반드시 포함해야 합니다.">
+
+      <button type="submit">회원가입</button>
+      <p id="signupMessage"></p>
+    </form>
+
+  </div>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      /* 회원가입 */
+
+    const checkBtn = document.getElementById("checkIdBtn");
+    const signupMessage = document.getElementById("signupMessage");
+    const usernameInput = document.querySelector("input[name='username']");
+    let idAvailable = false;
+
+    checkBtn.addEventListener("click", () => {
+    const username = usernameInput.value.trim();
+
+    if (!username) {
+      signupMessage.style.color = "red";
+      signupMessage.textContent = "아이디를 입력하세요.";
+      idAvailable = false;
+      return;
+    }
+
+      fetch('/check-id', {          // 서버에 중복확인 요청
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.exists) {
+          signupMessage.style.color = "red";
+          signupMessage.textContent = "이미 사용 중인 아이디입니다.";
+          idAvailable = false;
+        } else {
+          signupMessage.style.color = "green";
+          signupMessage.textContent = "사용 가능한 아이디입니다!";
+          idAvailable = true;
+        }
+      });
+    });
+
+    /* --- 회원가입 전송 --- */
+    const signupForm = document.getElementById("signupForm");
+
+  signupForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    if (!idAvailable) {
+      signupMessage.style.color = "red";
+      signupMessage.textContent = "아이디 중복확인을 해주세요!";
+      return;
+    }
+
+    const password = signupForm.password.value;
+
+    // 비밀번호 검증
+    const pwCheck = /^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{8,16}$/;
+
+    if (!pwCheck.test(password)) {
+      signupMessage.style.color = "red";
+      signupMessage.textContent = "비밀번호는 8~16자리 영문+숫자 조합이어야 합니다.";
+      return;
+    }
+
+    const formData = {
+      name: signupForm.name.value,
+      username: signupForm.username.value,
+      password: signupForm.password.value
+    };
+
+    fetch('/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("회원가입 완료!");
+        window.location.href = "/login.html";   // 로그인 페이지로 이동
+      } else {
+        signupMessage.style.color = "red";
+        signupMessage.textContent = "회원가입 실패!";
+      }
+    });
+  });
+</script>

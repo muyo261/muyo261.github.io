@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .content-box {
+      display: none;
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #fafdff;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin: 100px auto;
+    }
+
+    .timeline-container {
+      display: flex;
+      align-items: flex-end; 
+      white-space: nowrap; 
+      padding: 30px 10px;
+      margin: 30px auto; 
+      overflow-x: auto;
+    }
+    .item-group {
+      display: flex;
+      flex-direction: column; 
+      align-items: center; 
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+    
+    .pin-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .pin-icon {
+      width: 50px;
+      height: auto;
+      order: 2; 
+    }
+    
+    .location-name {
+      font-weight: 700;
+      font-size: 20px;
+      color: black;
+      order: 1; 
+      margin-bottom: -25px; 
+      white-space: normal; 
+      text-align: center;
+    }
+    
+    .travel-group {
+      padding-bottom: 8px;
+    }
+    
+    .walking-icon {
+      width: 35px;
+      height: auto;
+      margin-bottom: 5px; 
+    }
+    
+    .duration-text {
+      font-size: 18px;
+      color: black;
+      font-weight: 500;
+      margin-top: -25px; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ol {
+      padding-left: 20px;
+      line-height: 2.0;
+      margin-top: 50px;
+    }
+
+    .content-box img {
+      display: block;
+      margin: 50px auto;
+      max-width: 700px;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 70px;
+    }
+
+    .content-box p {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 10px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">🗺️ 도쿄 여행 코스</div>
+
+    <div class="content-box" style="display: block;">
+        <h2>도쿄의 이국적인 모습 = 오다이바</h2>
+        <p>총 소요시간: 약 8시간</p>
+
+        <div class="timeline-container">
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">텔레콤센터 전망대</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">10분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">일본 과학 미래관</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">10분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">다이버 시티 도쿄 플라자</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">10분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">오다이바 해변 공원 & 레인보우 브릿지</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+        </div>
+
+        <ol>
+            <li>텔레콤센터 전망대</li>
+            <div><img src="images/course/odaiba.png"></div>
+            <p>오다이바의 첫 장소로 텔레콤센터 전망대로 시작해보는 것이 좋을 것 같습니다.</p>
+            <p>특이한 점이 텔레콤센터 전망대는 일본 방송사 후지 TV 본사이지만 오다이바 전경이 펼쳐지는 전망대가 있습니다.</p>
+            <p>사옥 25층에 위치한 독특한 구 형태의 공간이 전망대며, 오다이바의 랜드마크를 한 눈에 볼 수 있습니다.</p>
+
+            <li>일본 과학 미래관</li>
+            <div><img src="images/course/odaiba1.jpg"></div>
+            <p>오다이바에는 일본의 최첨단 과학 기술에 대해 배울 수 있는 박물관이 있습니다!</p>
+            <p>일본 과학 미래관은 모두를 위한 과학을 지향해 과학 기술 지식이 부족한 사람도 즐길 수 있는 콘텐츠들을 마련해놨습니다.</p>
+            <p>박물관의 상징인 지구 모형은 1000만 화소 LED 패널로 지구의 모습을 보여주고 있습니다. 기상 위성이 촬영해 송신하는 이미지를 통해 지구의 실시간 모습을 확인할 수 있습니다.</p>
+            <p>또한 국제우주정거장을 재현해놓은 체험장이 있어 우주 생활을 간접 경험해볼 수 있습니다.</p>
+            <p>과학에 관심이 많다면, 아이와 함께라면 일본 과학 미래관을 추천드립니다.</p>
+
+            <li>다이버 시티 도쿄 플라자</li>
+            <div><img src="images/course/odaiba2.jpg"></div>
+            <p>오다이바를 검색하면 항상 나오는 이미지 중 하나인 거대한 크기의 건담이 있는 곳이 다이버 시티 도쿄 플라자입니다.</p>
+            <p>다이버 시티 도쿄 플라자는 '극장형 도시 공간'이라는 콘셉트로 오픈 한 곳으로 다양한 엔터테인먼트, 다이닝, 쇼핑 옵션이 있는 랜드마크 같은 쇼핑몰입니다.</p>
+            <p>다이버 시티는 건담이 가장 큰 특징인데 매장 안에도 많은 프라모델이 있고 세계관 체험과 VR이 있어 즐길 거리가 아주 풍부합니다.</p>
+
+            <li>오다이바 해변 공원 & 레인보우 브릿지</li>
+            <div><img src="images/course/odaiba3.jpg"></div>
+            <p>오다이바가 이국적인 모습을 보이는데는 오다이바의 자유의 여신상에 있습니다.</p>
+            <p>오다이바의 자유의 여신상은 뉴욕에 있는 자유의 여신상 복제품으로 가까운 곳에서 자유의 여신상을 볼 수 있습니다.</p>
+            <p>또한 그 뒤로 보이는 레인보우 브릿지는 야경이 특히 아름답습니다. 야간 조명이 밝혀지면 도쿄의 최고 명소라고 할 수 있습니다.</p>
+
+        </ol>
+    </div>
+
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function showContent(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>

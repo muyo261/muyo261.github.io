@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 200vh;
+      background: url('images/main_bg1.png') no-repeat center top;
+      background-size: contain; 
+    }
+
+    /* 2번째 배경 */
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+      background: transparent;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:100px 20px 60px 20px;
+    }
+
+    /* 슬라이드쇼 */
+    .slideshow{
+      position:relative;
+      width:100%;
+      height:500px;
+      border-radius:var(--card-radius);
+      overflow:hidden;
+      box-shadow:0 8px 30px rgba(0,0,0,0.08);
+    }
+    .slide{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:0;
+      transition:opacity 1s ease;
+    }
+    .slide.active{opacity:1;}
+
+    .slide .title{
+      position:absolute;
+      left:20px;bottom:20px;
+      color:white;
+      font-size:22px;
+      font-weight:700;
+      text-shadow:0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .info-bar{
+      position: absolute;   /* 화면 기준 위치 지정 */
+      top:750px;            /* 슬라이드 아래 적절한 위치 */
+      left:0;               /* 화면 왼쪽 끝 */
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:flex-start;
+      padding-left:20px;    /* 약간 여백 */
+      z-index:5;            /* 다른 요소 위로 올라오도록 */
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:18px;
+    }
+    .chip.date{background: white; color:black; font-weight:600; }
+    .chip.weather{background: white; color:black; font-weight:600; border-radius:12px;}
+
+    /* 새로운 카드 섹션 */
+    .play-btn-big {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 70px;
+      height: 70px;
+      background: black;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .play-btn-big div{
+      width:0;height:0;
+      border-top:12px solid transparent;
+      border-bottom:12px solid transparent;
+      border-left:22px solid white;
+    }
+
+    .grid-box{
+      width:100%;
+      margin:450px auto 80px;
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:26px;
+    }
+
+    .card{ /* 메인 페이지 카드들 */
+      background:#d7ead9;
+      border-radius:40px;
+      padding:40px;
+      position:relative;
+      min-height:250px;
+      font-size:26px;
+      font-weight: bold;
+      display:flex;
+      align-items:flex-start;
+      background-size:cover; /* 카드 사진 */
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+
+    .card-text {
+      color: #fff;                     /* 글씨 색상 */
+      font-weight: bold;
+      font-size: 20px;
+      text-shadow: 
+        -2px -2px #000, 2px -2px #000, -2px 2px #000, 2px 2px #000;         
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+    }
+
+
+    .play-btn-small{
+      position:absolute;
+      right:20px;
+      bottom:20px;
+      width:55px;height:55px;
+      background:#488cf9;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      border: 3px solid black;
+    }
+    .play-btn-small div{
+      width:0;height:0;
+      border-top:10px solid transparent;
+      border-bottom:10px solid transparent;
+      border-left:18px solid white;
+    }
+
+    /* 이벤트 슬라이더 */
+    .event-section{
+      margin-top:250px;
+    }
+
+    .event-slider{
+      position:relative;
+      overflow:hidden;
+      max-width:var(--max-width);
+      margin:0 auto;
+    }
+
+    .event-slider-wrapper {
+      overflow: visible;  /* 버튼이 밖으로 나와도 안 잘림 */
+      position: relative;
+    }
+
+    .event-track{
+      display:flex;
+      width:100%;
+      transition:transform 0.5s ease;
+    }
+
+    .event-card{
+      flex:0 0 50%; /* 화면에 2개 보이게 */
+      padding:20px;
+    }
+
+    .event-inner{
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      height: 250px;         /* 카드 높이 조정 */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;  /* 글씨를 아래쪽으로 */
+      position: relative;
+    }
+
+    .event-text-wrapper {
+      margin-top: 10px;    /* 이미지와 글씨 사이 간격 */
+      text-align: center;  /* 글씨 가운데 정렬 */
+    }
+
+    .event-text {
+      font-size: 21px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .event-date {
+      font-size: 18px;
+    }
+
+    /* 좌우 버튼 */
+    .event-btn{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:40px;       /* 버튼 크기 */
+      height:40px;
+      background:transparent;  /* 기존 검은 배경 제거 */
+      border:none;
+      cursor:pointer;
+      padding:0;
+      z-index:10;       /* 버튼이 항상 위에 있도록 */
+    }
+
+    .event-btn img{
+      width:100%;
+      height:100%;
+      object-fit:contain; /* 이미지 비율 유지 */
+      display:block;
+    }
+    .event-btn.prev{ left: -50px; }
+    .event-btn.next{ right: -50px; }
+
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+  <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+</div>
+
+
+<main class="container">
+
+  <!-- 대표 이미지 슬라이드 -->
+  <section class="slideshow">
+    <div class="slide active" style="background-image:url('images/main1.jpg');">
+      <div class="title">도쿄 타워</div>
+    </div>
+    <div class="slide" style="background-image:url('images/main2.jpg');">
+      <div class="title">디즈니 랜드</div>
+    </div>
+    <div class="slide" style="background-image:url('images/main3.jpg');">
+      <div class="title">오다이바</div>
+    </div>
+    
+  </section>
+
+  <!-- 정보 바 -->
+  <section class="info-bar">
+    <div class="chip date">
+      <div id="today-date"></div>
+    </div>
+    <div class="chip weather" id="weather-info">
+      <img id="weather-icon" src="images/weather_sun.png" style="width:24px; height:24px; margin-right:6px;">
+      <span id="weather-text"></span>
+      <img id="wind-icon" src="images/weather_wind.png" style="width:16px; height:16px; margin-left:6px;">
+    </div>
+  </section>
+
+
+
+  <!-- 새로운 카드 영역 시작 -->
+
+  <section class="grid-box">
+    <div class="card" style="background-image:url('images/first_tokyo.png')">
+      <div class="card-text">도쿄 여행이 처음이라면</div>
+      <div class="play-btn-small"><div></div></div>
+    </div>
+
+    <div class="card" style="background-image:url('images/tour_course.png')">
+      <div class="card-text">도쿄 여행 코스</div>
+      <div class="play-btn-small"><div></div></div>
+    </div>
+
+    <div class="card" style="background-image:url('images/tour.jpg')">
+      <div class="card-text">관광</div>
+      <div class="play-btn-small"><div></div></div>
+    </div>
+
+    <div class="card" style="background-image:url('images/restaurant.jpg')">
+      <div class="card-text">맛집</div>
+      <div class="play-btn-small"><div></div></div>
+    </div>
+
+    </section>
+
+    <section class="event-section">
+      <h2 style="font-size:26px; font-weight:700; margin-bottom:20px;">도쿄 이벤트</h2>
+
+      <div class="event-slider-wrapper" style="position: relative;"> <!-- wrapper 추가 -->
+
+        <button class="event-btn prev">
+          <img src="images/slide_button_prev.png" alt="prev" />
+        </button>
+
+        <div class="event-slider">
+        <div class="event-track">
+
+          <!-- 처음에 보이는 2개 -->
+          <div class="event-card">
+            <div class="event-inner" style="background-image:url('images/festival1.png');">
+            </div>
+            <div calss="event-text-wrapper">
+              <div class="event-text">오지 여우 행렬</div>
+              <div class="event-date">📅 2025년 12월 31일 ~ 2026년 1월 1일</div>
+              </div>
+          </div>
+
+
+          <div class="event-card">
+            <div class="event-inner" style="background-image:url('images/festival2.jpg');">
+            </div>
+            <div calss="event-text-wrapper">
+              <div class="event-text">유시마텐진 매화 축제</div>
+              <div class="event-date">📅 2026년 2월</div>
+              </div>
+          </div>
+
+          <!-- 버튼 누르면 보이는 2개 -->
+          <div class="event-card">
+            <div class="event-inner" style="background-image:url('images/festival3.png');">
+            </div>
+            <div calss="event-text-wrapper">
+              <div class="event-text">도쿄 마라톤</div>
+              <div class="event-date">📅 2026년 3월 1일</div>
+              </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-inner" style="background-image:url('images/festival4.png');">
+            </div>
+            <div calss="event-text-wrapper">
+              <div class="event-text">스미다 강 불꽃 축제</div>
+              <div class="event-date">📅 2026년 7월 후반</div>
+              </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="event-btn next">
+          <img src="images/slide_button_next.png" alt="next" />
+        </button>
+
+      </div>
+    </section>
+  </main>
+  
+  
+  
+  <script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+    /* 대표 이미지 슬라이드 */
+      const slides = document.querySelectorAll('.slide');
+      let currentIndex = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === index);
+        });
+      }
+
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+      }
+
+      function prevSlide() {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        showSlide(currentIndex);
+      }
+
+      // 자동재생 (원하면 켜고/끄기 가능)
+      setInterval(nextSlide, 4000);
+
+    /* 오늘 날짜 */
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1; // 0~11 이므로 +1
+    const day = today.getDate();
+
+    // YYYY.MM.DD 형태로 변환 + "의 날씨" 붙이기
+    const formattedDate = `${year}.${month.toString().padStart(2,'0')}.${day.toString().padStart(2,'0')} 도쿄의 날씨`;
+
+    // HTML에 넣기
+    document.getElementById('today-date').textContent = formattedDate;
+
+    /* 날씨 */
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=35.6895&lon=139.6917&appid=3ff15ba693ae56b6728f56d159e485b6&units=metric&lang=kr`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const temp = Math.round(data.main.temp);        // 온도
+        const weather = data.weather[0].description;   // 날씨 설명
+        const wind = data.wind.speed;                  // 풍속
+
+        // 날씨 이미지 선택
+        let iconSrc = '';
+        if(weather.includes('맑음')) iconSrc = 'images/weather_sun.png';
+        else if(weather.includes('구름')) iconSrc = 'images/weather_cloud.png';
+        else if(weather.includes('비')) iconSrc = 'images/weather_rain.png';
+        else if(weather.includes('눈')) iconSrc = 'images/weather_snow.png';
+        else iconSrc = 'images/weather_sun_cloud.png';
+
+        // HTML 업데이트
+        document.getElementById('weather-icon').src = iconSrc;
+        document.getElementById('weather-text').textContent = `${temp}℃`;
+        document.getElementById('wind-icon').nextSibling.textContent = ` ${wind} m/s`;
+      })
+      .catch(err => {
+        document.getElementById('weather-text').textContent = '날씨 정보를 불러올 수 없습니다.';
+        console.error(err);
+      });
+
+
+    /* 이벤트 */
+    const track = document.querySelector('.event-track');
+    const nextBtn = document.querySelector('.event-btn.next');
+    const prevBtn = document.querySelector('.event-btn.prev');
+
+    // 0페이지: 첫 2개 / 1페이지: 다음 2개
+    let eventIndex = 0;
+
+    function updateEventSlider(){
+      track.style.transform = `translateX(-${eventIndex * 100}%)`;
+    }
+
+    nextBtn.addEventListener('click', ()=>{
+      eventIndex = Math.min(eventIndex + 1, 1);
+      updateEventSlider();
+    });
+
+    prevBtn.addEventListener('click', ()=>{
+      eventIndex = Math.max(eventIndex - 1, 0);
+      updateEventSlider();
+    });
+    
+</script>

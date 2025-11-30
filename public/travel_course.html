@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>도쿄 여행 코스</title>
+    <style>
+        :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .course-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 40px; 
+      max-width: 2000px;
+      margin: 0 auto;
+    }
+    
+    .course-item {
+      display: block;
+      background-color: rgb(225, 238, 254, 0.7);
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none; 
+      color: inherit;
+      margin: 100px 30px 100px 30px;
+    }
+    
+    .course-item:hover {
+      transform: translateY(-8px); 
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .course-image {
+      width: 100%;
+      padding-top: 75%; 
+      position: relative;
+      overflow: hidden;
+      background-color: #f0f0f0; 
+    }
+    
+    .course-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover; 
+      display: block; 
+    }
+    
+    .course-title {
+      padding: 18px 20px;
+      font-size: 1.25em;
+      font-weight: 700;
+      color: #333;
+      text-align: left;
+      line-height: 1.4;
+    }
+    
+    @media (max-width: 768px) {
+      main { padding: 0 20px; }
+      .course-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div>
+                <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+            </div>
+        </div>
+        <img src="images/category.png" class="menu-btn">
+    </header>
+
+    <div id="category-panel">
+        <div class="panel-close">×</div>
+
+        <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+    </div>
+
+    <main>
+        <div class="page-subtitle">🗺️ 도쿄 여행 코스</div>
+
+        <div class="course-container">
+            
+            <a href="course_shibuya.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/shibuya2.png">
+                    </div>
+                <div class="course-title">시부야 하늘과 땅에서 둘러보기</div>
+            </a>
+
+            <a href="course_kichijoji.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/kichijoji1.jpg"> 
+                </div>
+                <div class="course-title">기치조지 뚜벅이 여행</div>
+            </a>
+
+            <a href="course_ahsakusa.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/ahsakusa3.png">
+                </div>
+                <div class="course-title">아사쿠사 반나절 여행기</div>
+            </a>
+
+            <a href="course_with_kid.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/with_kid2.png">
+                </div>
+                <div class="course-title">아이와 함께하는 도쿄 근교 여행</div>
+            </a>
+
+            <a href="course_shinjuku&shibuya.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/shinjuku&shibuya2.jpg">
+                </div>
+                <div class="course-title">도쿄의 강남 신주쿠와 시부야에서 쇼핑하기</div>
+            </a>
+
+            <a href="course_otsuka.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/otsuka3.png">
+                </div>
+                <div class="course-title">관광객이 없는 도쿄 여행을 하고 싶다면? 답은 오츠카</div>
+            </a>
+
+            <a href="course_odaiba" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/odaiba3.jpg">
+                </div>
+                <div class="course-title">도쿄의 이국적인 모습 = 오다이바</div>
+            </a>
+
+            <a href="course_fish_market.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/fish_market1.jpg">
+                </div>
+                <div class="course-title">츠키지 수산물 시장 여행</div>
+            </a>
+
+            <a href="course_capyba.html" class="course-item">
+                <div class="course-image">
+                    <img src="images/course/cafe1.jpg">
+                </div>
+                <div class="course-title">도쿄에서 즐길 수 있는 이색 카페 여행 코스</div>
+            </a>
+
+        </div>
+    </main>
+</body>
+
+<script>
+    /* 카테고리 패널 열기 닫기 스크립트 (기존 유지) */
+    const menuBtn = document.querySelector(".menu-btn");
+    const panel = document.getElementById("category-panel");
+    const closeBtn = document.querySelector(".panel-close");
+
+    menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+    });
+
+    closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+    });
+</script>
+</html>

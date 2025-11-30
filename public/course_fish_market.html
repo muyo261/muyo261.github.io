@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .content-box {
+      display: none;
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #fafdff;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin: 100px auto;
+    }
+
+    .timeline-container {
+      display: flex;
+      align-items: flex-end; 
+      white-space: nowrap; 
+      padding: 30px 10px;
+      margin: 30px auto; 
+      overflow-x: auto;
+    }
+    .item-group {
+      display: flex;
+      flex-direction: column; 
+      align-items: center; 
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+    
+    .pin-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .pin-icon {
+      width: 50px;
+      height: auto;
+      order: 2; 
+    }
+    
+    .location-name {
+      font-weight: 700;
+      font-size: 20px;
+      color: black;
+      order: 1; 
+      margin-bottom: -25px; 
+      white-space: normal; 
+      text-align: center;
+    }
+    
+    .travel-group {
+      padding-bottom: 8px;
+    }
+    
+    .walking-icon {
+      width: 35px;
+      height: auto;
+      margin-bottom: 5px; 
+    }
+    
+    .duration-text {
+      font-size: 18px;
+      color: black;
+      font-weight: 500;
+      margin-top: -25px; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ol {
+      padding-left: 20px;
+      line-height: 2.0;
+      margin-top: 50px;
+    }
+
+    .content-box img {
+      display: block;
+      margin: 50px auto;
+      max-width: 700px;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 70px;
+    }
+
+    .content-box p {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 10px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">🗺️ 도쿄 여행 코스</div>
+
+    <div class="content-box" style="display: block;">
+        <h2>츠키지 수산물 시장 여행</h2>
+        <p>총 소요시간: 약 5시간</p>
+
+        <div class="timeline-container">
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">츠키지 장외 시장</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">15분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">하마리큐 정원</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">25분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">카치도키 다리</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+        </div>
+
+        <ol>
+            <li>츠키지 장외 시장</li>
+            <div><img src="images/course/fish_market1.jpg"></div>
+            <p>일본에 왔으면 해산물이 빠질 수 없다는 분들을 위한 여행 코스입니다.</p>
+            <p>도쿄의 부엌이라 불리는 츠키지 해산물 시장은 해산물을 좋아하시는 분들이라면 꼭 방문해야 하는 곳이라고 생각합니다.</p>
+            <p>장내 시장은 2018년에 폐쇄돼어 도요스에 새로운 시설로 이전되어 관광객은 장내시장 출입을 할 수 없지만 장외는 여전히 개방되어 있습니다.</p>
+            <p>생선초밥부터 덮밥에 이르기까지 장외시장에서 다양한 생선요리를 만날 수 있습니다.</p>
+
+            <li>하마리큐 정원</li>
+            <div><img src="images/course/fish_market2.jpg"></div>
+            <p>츠키지 시장에서 인접한 정원입니다.</p>
+            <p>가장 큰 특징은 바닷물을 끌어들여 조석 간만에 따라 수위가 변하는 조수 연못을 가지고 있습니다.</p>
+            <p>연못 중앙의 나키지마 찻집에서는 마차를 마시며 고즈넉한 휴식을 취할 수 있으며, 현대적인 도심 빌딩과 전통 정원의 아름다운 대비를 감상할 수 있습니다.</p>
+
+            <li>카치도키 다리</li>
+            <div><img src="images/course/fish_market3.jpg"></div>
+            <p>츠키지 시장과 하루미 지역을 잇는 스미다강 위에 놓인 역사적인 다리입니다.</p>
+            <p>1940년에 건설된 다리로, 한때는 선박 통행을 위해 다리 중앙이 열리는 기능이 있었습니다.</p>
+            <p>도쿄 올림픽 당시의 역사적 의미를 간직하고 있어, 강변을 따라 산책하며 강을 구경할 수 있습니다.</p>
+
+        </ol>
+    </div>
+
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function showContent(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>

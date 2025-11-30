@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 여행 코스 작성</title>
+    <style>
+        :root{
+            --accent:#0b66ff;
+            --muted:#efefef;
+            --card-radius:18px;
+            --max-width:1100px;
+            --header-height:96px;
+        }
+
+        *{box-sizing:border-box}
+
+        html {
+            background: url('images/sub_bg.png') no-repeat center top;
+            background-size: contain; 
+        }
+
+        body{
+            margin:0;
+            font-family:"Noto Sans KR", sans-serif;
+            color:#111;
+        }
+
+        header{
+            height:var(--header-height);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:100px 12px 20px;
+            max-width:var(--max-width);
+            margin:0 auto;
+            position: relative;
+        }
+
+        .logo{
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display:flex;
+            align-items:center;
+            gap: 12px;
+            font-weight:700;
+            font-size:18px;
+        }
+
+        .logo a {
+            color: inherit; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+
+        .logo-icon {
+            width: 55px; 
+            height: 55px;
+        }
+
+
+        .menu-btn{
+            position: absolute;
+            right: 12px;
+            top: 87%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+        }
+
+        #category-panel {
+            position: fixed;
+            top: 0;
+            right: -350px; 
+            width: 350px;
+            height: 100vh;
+            background: #e5f6ff;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            transition: right 0.4s ease;
+            z-index: 9999;
+            padding: 40px 30px;
+            overflow-y: auto;
+            border-radius: 30px 0 0 30px;
+        }
+
+        #category-panel.active {
+            right: 0; 
+        }
+
+        .panel-close {
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .panel-content a {
+            display: block;
+            padding: 14px 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .panel-content a + a {
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .panel-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border-radius: 32px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .panel-btn.login {
+            background: #5cabff; 
+            color: white; 
+        }
+
+        .panel-btn.login:hover {
+            background: #9ac8fd;
+        }
+
+        .panel-btn.signup {
+            background: #5cabff; 
+            color: white;
+        }
+
+        .panel-btn.signup:hover {
+            background: #9ac8fd; 
+        }
+
+
+        .menu-icon {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        main {
+            max-width: 100%;
+            width: 100%;
+            margin: 150px 0 100px; 
+            padding: 0 12px;
+            display: flex;
+            flex-direction: column;
+            text-align: left; 
+        }
+
+        .page-subtitle {
+            font-size: 25px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 150px;
+            margin-bottom: 150px;
+            text-align: center; 
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        .content-box {
+            display: block; 
+            width: 100%;
+            max-width: 1500px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: var(--card-radius);
+            border: 1px solid #eee;
+            animation: fadeIn 0.4s ease;
+            margin: 0 auto;
+        }
+        
+        .post-title-input {
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .post-title-input:focus {
+            border-color: var(--accent);
+        }
+
+        .editor-toolbar {
+            display: flex; 
+            padding: 8px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        
+        .editor-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: var(--muted);
+            border: 1px solid #ddd;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+            margin-right: 8px;
+            line-height: 1; 
+        }
+        .editor-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .content-editor-area { 
+            width: 100%; 
+            min-height: 400px; 
+            padding: 15px; 
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            color: #333;
+            line-height: 1.8;
+            outline: none;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .content-editor-area img {
+            max-width: 100%; 
+            height: auto;
+            display: block;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .register-container {
+            display: flex;
+            justify-content: flex-end; 
+        }
+
+        .register-button {
+            padding: 12px 30px; 
+            background-color: var(--accent);
+            color: white;
+            font-weight: bold;
+            border-radius: 30px; 
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .register-button:hover {
+            background-color: #0055e8; 
+        }
+
+        .content-box h2, .content-box ul, .content-box li, .content-box p { display: none; } 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            header { padding-top: 50px; }
+            .logo { font-size: 16px; }
+            .logo-icon { width: 40px; height: 40px; }
+            .menu-btn { top: 75%; width: 35px; height: 35px; }
+            .container-main { margin: 20px auto; padding: 15px; }
+            .content-editor-area { min-height: 300px; }
+            #category-panel { width: 100%; right: -100%; border-radius: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div>
+                <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+            </div>
+        </div>
+        <img src="images/category.png" class="menu-btn">
+    </header>
+
+    <div id="category-panel">
+        <div class="panel-close">×</div>
+
+        <div class="panel-content">
+            <a href="main.html">
+                <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+            <a href="first_tokyo.html">
+                <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+            <a href="tokyo_tour.html">
+                <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+            <a href="restaurant.html">
+                <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+            <a href="travel_course.html">
+                <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+        <a href="login.html" class="panel-btn login">로그인</a>
+        <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+    </div>
+
+    <main>
+        <div class="page-subtitle">📝 새로운 여행 코스 작성</div>
+
+        <div id="entry" class="content-box">
+            
+            <div class="mb-4">
+                <label for="post-title" class="block text-sm font-medium text-gray-700 mb-1">제목</label>
+                <input type="text" id="post-title" placeholder="여행 코스 이름을 입력해 주세요."
+                       class="post-title-input">
+            </div>
+
+            <div id="editor-toolbar" class="editor-toolbar">
+                <button id="btn-bold" class="editor-btn" onclick="formatDoc('bold')">
+                    <span style="font-weight: 800; font-size: 1.25rem;">B</span>
+                </button>
+                <button id="btn-image" class="editor-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">내용 작성</label>
+                <div id="content-editor" contenteditable="true"
+                     class="content-editor-area">
+                    <p>여행 코스의 상세 내용 (일정, 장소, 팁)을 자유롭게 작성해 주세요.</p>
+                </div>
+            </div>
+
+            <input type="file" id="image-input" accept="image/*" style="display: none;">
+
+            <div class="register-container">
+                <button id="post-btn" class="register-button">
+                    코스 등록하기
+                </button>
+            </div>
+            
+        </div>
+    </main>
+</body>
+
+<script>
+    const menuBtn = document.querySelector(".menu-btn");
+    const panel = document.getElementById("category-panel");
+    const closeBtn = document.querySelector(".panel-close");
+
+    menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+    });
+
+    closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+    });
+
+    const titleInput = document.getElementById('post-title');
+    const editor = document.getElementById('content-editor');
+    const postButton = document.getElementById('post-btn');
+    const imageButton = document.getElementById('btn-image');
+    const imageInput = document.getElementById('image-input');
+
+    let savedRange = null;
+
+    editor.addEventListener('mouseup', saveSelection);
+    editor.addEventListener('keyup', saveSelection);
+    editor.addEventListener('blur', saveSelection);
+
+    function saveSelection() {
+        if (window.getSelection) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                savedRange = sel.getRangeAt(0);
+            }
+        }
+    }
+
+    function restoreSelection() {
+        if (savedRange) {
+            if (window.getSelection) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+            }
+        }
+    }
+
+    function alertMessage(message) {
+        console.log("ALERT:", message);
+        window.alert(message);
+    }
+
+    function formatDoc(command, value) {
+        restoreSelection(); 
+        document.execCommand(command, false, value);
+        editor.focus();
+        saveSelection();
+    }
+
+    imageButton.addEventListener('click', () => {
+        saveSelection();
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataURL = e.target.result;
+            
+            restoreSelection();
+            editor.focus();
+
+            document.execCommand('insertImage', false, dataURL);
+            saveSelection();
+        };
+        reader.readAsDataURL(file);
+
+        imageInput.value = '';
+    });
+
+
+    postButton.addEventListener('click', () => {
+        const title = titleInput.value;
+        const contentHTML = editor.innerHTML;
+        const contentText = editor.innerText;
+
+        if (!title.trim()) {
+            alertMessage('제목을 입력해 주세요.');
+            return;
+        }
+        if (!contentText.trim()) {
+            alertMessage('내용을 입력해 주세요.');
+            return;
+        }
+
+        console.log('--- 게시글 등록 핵심 데이터 ---');
+        console.log('제목:', title);
+        console.log('내용 (HTML):', contentHTML);
+        console.log('----------------------------');
+
+        alertMessage(`[${title}] 코스가 성공적으로 등록되었습니다! (콘솔 확인)`);
+
+        titleInput.value = '';
+        editor.innerHTML = '<p>여행 코스의 상세 내용 (일정, 장소, 팁)을 자유롭게 작성해 주세요.</p>';
+    });
+
+    window.onload = function() {
+        editor.focus();
+        saveSelection();
+    };
+
+</script>
+</html>

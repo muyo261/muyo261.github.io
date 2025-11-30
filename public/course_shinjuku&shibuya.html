@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .content-box {
+      display: none;
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #fafdff;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin: 100px auto;
+    }
+
+    .timeline-container {
+      display: flex;
+      align-items: flex-end; 
+      white-space: nowrap; 
+      padding: 30px 10px;
+      margin: 30px auto; 
+      overflow-x: auto;
+    }
+    .item-group {
+      display: flex;
+      flex-direction: column; 
+      align-items: center; 
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+    
+    .pin-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .pin-icon {
+      width: 50px;
+      height: auto;
+      order: 2; 
+    }
+    
+    .location-name {
+      font-weight: 700;
+      font-size: 20px;
+      color: black;
+      order: 1; 
+      margin-bottom: -25px; 
+      white-space: normal; 
+      text-align: center;
+    }
+    
+    .travel-group {
+      padding-bottom: 8px;
+    }
+    
+    .walking-icon {
+      width: 35px;
+      height: auto;
+      margin-bottom: 5px; 
+    }
+    
+    .duration-text {
+      font-size: 18px;
+      color: black;
+      font-weight: 500;
+      margin-top: -25px; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ol {
+      padding-left: 20px;
+      line-height: 2.0;
+      margin-top: 50px;
+    }
+
+    .content-box img {
+      display: block;
+      margin: 50px auto;
+      max-width: 700px;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 70px;
+    }
+
+    .content-box p {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 10px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">🗺️ 도쿄 여행 코스</div>
+
+    <div class="content-box" style="display: block;">
+        <h2>도쿄의 강남 신주쿠와 시부야에서 쇼핑하기</h2>
+        <p>총 소요시간: 약 8시간</p>
+
+        <div class="timeline-container">
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">이세탄</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">7분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">신주쿠 다카시마야 타임즈 스퀘어</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/subway.png" style="width: 50px;" class="walking-icon">
+                <span class="duration-text">15분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">시부야스카이 </span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+
+            <div class="item-group travel-group">
+                <img src="images/walking.png" class="walking-icon">
+                <span class="duration-text">8분</span>
+            </div>
+
+            <div class="item-group landmark-group">
+                <div class="pin-box">
+                    <span class="location-name">메가 돈키호테 시부야</span>
+                    <img src="images/ping.png" class="pin-icon">
+                </div>
+            </div>
+        </div>
+
+        <ol>
+            <li>이세탄</li>
+            <div><img src="images/setan.png"></div>
+            <p>신주쿠에는 아주 큰 백화점인 이세탄이 있습니다.</p>
+            <p>일본에서 가장 크고 전세계 백화점 매출 1위를 기록했던 곳입니다.</p>
+            <p>엄청난 규모와 함께 많은 브랜드가 입점되어 있고, 식품관도 유명한 곳입니다.</p>
+            <p>또한 면세도 가능해 쇼핑하기 아주 좋은 곳이라고 생각합니다.</p>
+
+            <li>신주쿠 다카시마야 타임즈 스퀘어</li>
+            <div><img src="images/course/shinjuku&shibuya2.jpg"></div>
+            <p>JR 신주쿠역과 직결된 다카시마야 타임즈 스퀘어에 있는 백화점은 패션, 식품, 리빙용품, 미술 갤러리까지 갖춘 곳입니다.</p>
+            <p>각 층에는 인기 카페가 들어서 있고, 12층부터 14층까지는 각종 레스토랑이 있습니다.</p>
+            <p>13층 테라스에서는 신주쿠의 절경을 감상할 수 있습니다!</p>
+
+            <li>시부야 스카이</li>
+            <div><img src="images/course/shinjuku&shibuya3.png"></div>
+            <p>시부야 스카이는 시부야 스크램블 스퀘어 꼭대기를 지칭합니다.</p>
+            <p>시부야 스크램블 스퀘어는 하루 종일 머무르기 좋은 대형 쇼핑 공간으로 되어있습니다.</p>
+            <p>시부야 스카이에서 도쿄 전경을 감상하고, 내려오면서 쇼핑도 하는 코스는 어떤가요?</p>
+
+            <li>메가 돈키호테 시부야</li>
+            <div><img src="images/course/shinjuku&shibuya4.png"></div>
+            <p>돈키호테는 한국에서도 유명한 일본 대표 프랜차이즈 대형 생활 잡화 판매점입니다.</p>
+            <p>메가 돈키호테는 기존 돈키호테 매장보다 더욱 많은 상품을 판매하고 있으며, 식재료 마트도 같이 있어서 현지 식재료를 구매하기 좋습니다.</p>
+            <p>면세가 가능하며 할인 쿠폰도 상시 있어 괜찮은 가격으로 구매할 수 있습니다.</p>
+
+        </ol>
+    </div>
+
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function showContent(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>

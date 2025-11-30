@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    :root{
+      --accent:#0b66ff;
+      --muted:#efefef;
+      --card-radius:18px;
+      --max-width:1100px;
+      --header-height:96px;
+    }
+
+    *{box-sizing:border-box}
+
+    html {
+      background: url('images/sub_bg.png') no-repeat center top;
+      background-size: contain;   
+    }
+
+    html::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100vh;   /* 첫 번째 배경 아래 */
+      height: 100vh;
+      background: url('images/main_bg3.png') no-repeat center top;
+      background-size: contain; 
+      z-index: -1;
+    }
+
+    body{
+      margin:0;
+      font-family:"Noto Sans KR", sans-serif;
+      color:#111;
+    }
+
+    header{
+      height:var(--header-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:100px 12px 20px;
+      max-width:var(--max-width);
+      margin:0 auto;
+      position: relative;
+    }
+
+    .logo{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .logo a {
+      color: inherit;            
+      text-decoration: none;     
+      display: flex;             
+      align-items: center;       
+      gap: 12px;                 
+    }
+
+    .logo-icon {
+      width: 55px; 
+      height: 55px;
+    }
+
+
+    .menu-btn{
+      position: absolute;
+      right: 12px;
+      top: 87%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    /* 카테고리 패널  */
+    #category-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;     /* 평소엔 화면 밖 */
+      width: 350px;
+      height: 100vh;
+      background: #e5f6ff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      transition: right 0.4s ease;
+      z-index: 9999;
+      padding: 40px 30px;
+      overflow-y: auto;
+      border-radius: 30px 0 0 30px;
+    }
+
+    #category-panel.active {
+      right: 0;           /* 활성화 시 화면에 나타남 */
+    }
+
+    /* 닫기 버튼 */
+    .panel-close {
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    /* 내부 링크 스타일 */
+    .panel-content a {
+      display: block;
+      padding: 14px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .panel-content a + a {
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .panel-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border-radius: 32px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .panel-btn.login {
+      background: #5cabff;   
+      color: white;           
+    }
+
+    .panel-btn.login:hover {
+      background: #9ac8fd;
+    }
+
+    /* 회원가입 버튼 */
+    .panel-btn.signup {
+      background: #5cabff;   
+      color: white;
+    }
+
+    .panel-btn.signup:hover {
+      background: #9ac8fd;  
+    }
+
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    main {
+      max-width: 100%;
+      width: 100%;
+      margin: 300px 0;
+      padding: 0 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-subtitle {
+      font-size: 25px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .tab-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 100px;
+    }
+
+    .tab-btn {
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 50px;
+      transition: all 0.2s;
+      color: black;
+    }
+
+    .tab-btn:hover { background-color: #f5f5f5; border-color: #999; }
+    .tab-btn.active { background-color: #4271ff; color: #fff; border-color: black; }
+
+    .content-box {
+      display: flex;             
+      align-items: flex-start;   
+      gap: 30px;                 
+      width: 100%;
+      max-width: 1500px;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: var(--card-radius);
+      border: 1px solid #eee;
+      animation: fadeIn 0.4s ease;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .content-row {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .content-box a {
+      text-decoration: none; 
+      color: inherit;         
+      transition: color 0.3s; 
+    }
+
+    .content-box a:hover {
+      color: #4271ff;
+    }
+
+    .content-box h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .content-box ul {
+      padding-left: 20px;
+      line-height: 2.0;
+      margin-bottom: 50px;
+    }
+
+    .content-box img {
+      margin: 0;
+    }
+
+    .content-box li {
+      font-size: 24px;
+      font-weight: bolder;
+      margin-top: 20px;
+    }
+
+    .content-box p {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .media-flex {
+    display: flex;
+    align-items: flex-start; 
+    gap: 30px; 
+    margin: 30px 0; }
+
+    .media-image {
+    flex-shrink: 0; 
+    width: 200px; }
+    
+    </style>
+</head>
+
+<body>
+    <header>
+  <div class="logo">
+    <div>
+      <a href="main.html"><div style="font-size:40px;"><img src="images/tokyo_tower.png" class="logo-icon"> 도쿄 가는 길</div></a>
+    </div>
+  </div>
+  <img src="images/category.png" class="menu-btn">
+</header>
+
+<!-- 카테고리(사이드 메뉴) 패널 -->
+<div id="category-panel">
+  <div class="panel-close">×</div>
+
+    <div class="panel-content">
+      <a href="main.html">
+        <img src="images/slide_button_next.png" class="menu-icon">홈</a>
+      <a href="first_tokyo.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행이 처음이라면</a>
+
+      <a href="tokyo_tour.html">
+        <img src="images/slide_button_next.png" class="menu-icon">관광</a>
+
+      <a href="restaurant.html">
+        <img src="images/slide_button_next.png" class="menu-icon">맛집</a>
+
+      <a href="cafe.html">
+        <img src="images/slide_button_next.png" class="menu-icon">카페</a>
+      
+      
+      <a href="travel_course.html">
+        <img src="images/slide_button_next.png" class="menu-icon">도쿄 여행 코스</a>
+        </div>
+
+      <a href="login.html" class="panel-btn login">로그인</a>
+      <a href="sign_up.html" class="panel-btn signup">회원가입</a>
+  </div>
+
+  <main>
+    <div class="page-subtitle">🍤 맛집</div>
+
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="toggleDistrict('shinjuku', this)">신주쿠구</button>
+      <button class="tab-btn" onclick="toggleDistrict('shibuya', this)">시부야구</button>
+      <button class="tab-btn" onclick="toggleDistrict('chiyoda', this)">치요다구</button>
+      <button class="tab-btn" onclick="toggleDistrict('minato', this)">미나토구</button>
+      <button class="tab-btn" onclick="toggleDistrict('taito', this)">다이토구</button>
+      <button class="tab-btn" onclick="toggleDistrict('chuo', this)">주오구</button>
+      <button class="tab-btn" onclick="toggleDistrict('sumida', this)">스미다구</button>
+      <button class="tab-btn" onclick="toggleDistrict('koto', this)">고토구</button>
+    </div>
+
+    <div id="shinjuku" class="content-box" style="display: block;">
+        
+        <h2>신주쿠구 맛집</h2>
+        <div class="content-row">
+            <img src="images/restaurant/shinjuku1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>나다이 돈카츠 카츠쿠라 신주쿠</li>
+                <p>주소: 일본 〒151-0051 Tokyo, Shibuya, Sendagaya, 5 Chome-24-2 Times Square Building, 14F 高島屋</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 돈까스</p>
+                <p>영업 시간: 11:00 ~ 21:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shinjuku2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>히노마루</li>
+                <p>주소: 일본 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome-6-6 하시모토 빌딩 B1F</p>
+                <p>⭐별점: 4.9</p>
+                <p>주메뉴: 야키니쿠</p>
+                <p>영업 시간: 11:30 ~ 17:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 4,000 ~ 5,000엔</p>
+                <a href="https://tabelog.com/tokyo/A1304/A130401/13187783/"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shinjuku3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>후운지</li>
+                <p>주소: 일본 〒151-0053 Tokyo, Shibuya, Yoyogi, 2 Chome-14-3 北斗第一ビル 1F</p>
+                <p>⭐별점: 4.3</p>
+                <p>주메뉴: 라멘</p>
+                <p>영업 시간: 11:00 ~ 15:00 / 17:00 ~ 21:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shinjuku4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>텐키치야</li>
+                <p>주소: 일본 〒163-0590 Tokyo, Shinjuku City, Nishishinjuku, 1 Chome-26-2 SHINJUKU NOMURA BUILDING, B2F</p>
+                <p>⭐별점: 4.2</p>
+                <p>주메뉴: 튀김</p>
+                <p>영업 시간: 11:00 ~ 14:00 / 17:30 ~ 20:30</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shinjuku5.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>테판 베이비</li>
+                <p>주소: 일본 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome-17-4 Pocket Building, B1F</p>
+                <p>⭐별점: 4.7</p>
+                <p>주메뉴: 오코노미야끼</p>
+                <p>영업 시간: 17:00 ~ 02:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 3,000엔</p>
+                <a href="https://www.tablecheck.com/shops/teppanbaby-shinjyuku/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="shibuya" class="content-box" style="display: none;">
+      <h2>시부야구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/shibuya1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>타키비야</li>
+                <p>주소: 일본 〒150-0002 Tokyo, Shibuya, 1 Chome-15-19 東口二葉ビル 1F</p>
+                <p>⭐별점: 4.7</p>
+                <p>주메뉴: 야키니쿠</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 23:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 4,000 ~ 10,000엔</p>
+                <a href="https://tabelog.com/kr/tokyo/A1303/A130301/13130110/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shibuya2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>규카츠 모토무라 시부야</li>
+                <p>주소: 일본 〒150-0002 Tokyo, Shibuya, 3 Chome-18-10 大野ビル2号館 B1F</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 돈까스</p>
+                <p>영업 시간: 11:00 ~ 22:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+                <a href="https://tabelog.com/kr/tokyo/A1303/A130301/13130110/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shibuya3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>모모파라다이스 시부야</li>
+                <p>주소: 일본 〒150-0042 Tokyo, Shibuya, Udagawacho, 31-2 渋谷 BEAM 6F</p>
+                <p>⭐별점: 4.9</p>
+                <p>주메뉴: 샤브샤브</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 22:30</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,500엔</p>
+                <a href="https://www.tablecheck.com/shops/nabezo-shibuyacenter/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shibuya4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>규몬</li>
+                <p>주소: 3 Chome-14-5 Shibuya, Tokyo 150-0002 일본</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 할랄 & 야키니쿠</p>
+                <p>영업 시간: 12:00 ~ 23:00</p>
+                <p>휴무일: 없음</p>
+                <a href="https://www.tablecheck.com/ko/gyumon-yakiniku-shibuya/reserve/message?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shibuya5.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>보테쥬 시부야</li>
+                <p>주소: 일본 〒150-0002 Tokyo, Shibuya, 1 Chome-12-9 宮益坂・渋谷郵便局右隣</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 오코노미야끼</p>
+                <p>영업 시간: 11:00 ~ 23:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔 ~ 3,000엔</p>
+                <a href="https://booking.ebica.jp/webrsv/search/e014070901/24501?isfixshop=true"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/shibuya6.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>니이가타 카츠동 타레카츠 시부야</li>
+                <p>주소: 1 Chome-5-9 Dogenzaka, Shibuya, Tokyo 150-0043 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 가츠동</p>
+                <p>영업 시간: 11:00 ~ 22:30</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="chiyoda" class="content-box" style="display: none;">
+      <h2>치요다구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/chiyoda1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>에비마루 라멘</li>
+                <p>주소: 일본 〒101-0065 Tokyo, Chiyoda City, Nishikanda, 2 Chome-1-13 1F</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 라멘</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 23:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+                <a href="https://www.tablecheck.com/shops/ebimaru/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chiyoda2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>츠키시마 몬자 타마토야 히비야</li>
+                <p>주소: 일본 〒100-0006 Tokyo, Chiyoda City, Yurakucho, 2 Chome-1-6 第1有楽高架橋下 第4ブロック,1F・B1F</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 몬자야키</p>
+                <p>영업 시간: 16:00 ~ 23:00 (평일) / 10:30 ~ 23:00 (주말)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 4,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chiyoda3.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>간다 마츠야</li>
+                <p>주소: 1 Chome-13 Kanda Sudacho, Chiyoda City, Tokyo 101-0041 일본</p>
+                <p>⭐별점: 4.3</p>
+                <p>주메뉴: 소바</p>
+                <p>영업 시간: 11:00 ~ 22:00</p>
+                <p>휴무일: 월요일, 일요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chiyoda4.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>우동 마루카</li>
+                <p>주소: 일본 〒101-0052 Tokyo, Chiyoda City, Kanda Ogawamachi, 3 Chome-1 6-1 NEW SURUGADAI bld. 1F</p>
+                <p>⭐별점: 4.3</p>
+                <p>주메뉴: 우동</p>
+                <p>영업 시간: 11:00 ~ 16:00 / 17:00 ~ 19:30</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+      </div>
+
+    <div id="minato" class="content-box" style="display: none;">
+      <h2>미나토구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/minato1.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>츠지한 아카사카아크힐즈</li>
+                <p>주소: 일본 〒107-0052 Tokyo, Minato City, Akasaka, 1 Chome-12-32 Ark Mori Building, 3階</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 해산물</p>
+                <p>영업 시간: 11:30 ~ 21:30 (주말은 20:30)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/minato2.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>이세 스이요시</li>
+                <p>주소: 일본 〒106-0031 Tokyo, Minato City, Nishiazabu, 4 Chome-2-15 水野ビル 3F</p>
+                <p>⭐별점: 4.9</p>
+                <p>주메뉴: 가이세키</p>
+                <p>영업 시간: 17:00 ~ 22:00 (주말은 20:30)</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 10,000엔 이상</p>
+                <a href="https://www.tablecheck.com/shops/ise-sueyoshi/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/minato3.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>테판야키 아카사카</li>
+                <p>주소: 1 Chome-12-33 Akasaka, Minato City, Tokyo 107-0052 일본</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 철판구이</p>
+                <p>영업 시간: 11:30 ~ 15:30 / 17:30 ~ 21:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 5,000엔 이상</p>
+                <a href="https://www.tablecheck.com/shops/anaintercontinentaltokyo-akasaka/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/minato4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>스시쇼 마사</li>
+                <p>주소: 일본 〒106-0031 Tokyo, Minato City, Nishiazabu, 4 Chome-1-15 セブン西麻布 B1F</p>
+                <p>⭐별점: 4.7</p>
+                <p>주메뉴: 스시</p>
+                <p>영업 시간: 18:00 ~ 00:00</p>
+                <p>휴무일: 월요일</p>
+                <p>1인당 예상 금액: 10,000엔 이상</p>
+                <a href="https://jpneazy.com/kr/restaurants/169?rwg_token=ACgRB3e383zDDpDFHRkC0XZgwUPOXok_ynzD4X3-A7oejqIrPWDZwsXaCfwKoaeZSaBuKjlPhqKgeF7la1bNwpYqipvoOLlZxQ%3D%3D">
+                  <p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/minato6.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>それいゆ食堂</li>
+                <p>주소: 1 Chome-6-5 Shibadaimon, Minato City, Tokyo 105-0012 일본</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 오코노미야끼</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 22:30</p>
+                <p>휴무일: 토요일, 일요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+                <a href="https://tabelog.com/kr/tokyo/A1314/A131401/13304372/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/minato7.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>토후야 우카이</li>
+                <p>주소: 4 Chome-4-13 Shibakoen, Minato City, Tokyo 105-0011 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 두부 요리</p>
+                <p>영업 시간: 11:45 ~ 15:30 / 17:00 ~ 21:30</p>
+                <p>휴무일: 월요일</p>
+                <p>1인당 예상 금액: 10,000엔 이상</p>
+                <a href="https://www.tablecheck.com/shops/ukai-shiba/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="taito" class="content-box" style="display: none;">
+      <h2>다이토구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/taito1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>아사쿠사 이마한 구제대로</li>
+                <p>주소: 3 Chome-1-12 Nishiasakusa, Taito City, Tokyo 111-0035 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 스키야끼</p>
+                <p>영업 시간: 11:30 ~ 14:30 / 16:00 ~ 20:30</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 10,000엔 이상</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/taito2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>츠루지로</li>
+                <p>주소: 1 Chome-20-8 Asakusa, Taito City, Tokyo 111-0032 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 몬자야키</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 22:00 (일요일은 21:00)</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+                <a href="https://tabelog.com/kr/tokyo/A1311/A131102/13052466/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/taito3.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>타스케 스시</li>
+                <p>주소: 2 Chome-26-6 Matsugaya, Taito City, Tokyo 111-0036 일본</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 스시</p>
+                <p>영업 시간: 12:00 ~ 14:00</p>
+                <p>휴무일: 수요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+                <a href="https://restaurant.ikyu.com/148316/?ikgo=2"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/taito4.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>돈카츠 코테츠</li>
+                <p>주소: 일본 〒110-0005 Tokyo, Taito City, Ueno, 6 Chome-7-3 幸正ビル 地下一階</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 돈까스</p>
+                <p>영업 시간: 11:30 ~ 14:00 / 16:00 ~ 21:00</p>
+                <p>휴무일: 화요일</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/taito5.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>보우야 우에노 로쿠초메</li>
+                <p>주소: 일본 〒110-0005 Tokyo, Taito City, Ueno, 6 Chome-6-6 小湊ビル 1~2F</p>
+                <p>⭐별점: 4.7</p>
+                <p>주메뉴: 야키니쿠</p>
+                <p>영업 시간: 12:00 ~ 14:30 / 17:00 ~ 23:15</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 5,000엔 이상</p>
+                <a href="https://tabelog.com/kr/tokyo/A1311/A131101/13186440/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/taito6.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>야키니쿠 코코카라 우에노</li>
+                <p>주소: 일본 〒110-0005 Tokyo, Taito City, Ueno, 2 Chome-5-8 数寄屋ビル 1F</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 야키니쿠</p>
+                <p>영업 시간: 17:00 ~ 05:00 (일요일은 23:00)</p>
+                <p>휴무일: 없음</p>
+                <a href="https://tabelog.com/kr/tokyo/A1311/A131101/13227583/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+      </div>
+
+      <div id="chuo" class="content-box" style="display: none;">
+      <h2>주오구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/chuo1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>마구로야 쿠로긴 츠키지</li>
+                <p>주소: 4 Chome-10-12 Tsukiji, Chuo City, Tokyo 104-0045 일본</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 해산물 요리</p>
+                <p>영업 시간: 08:00 ~ 13:00</p>
+                <p>휴무일: 수요일</p>
+                <p>1인당 예상 금액: 2,000 ~ 4,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chuo2.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>시겐</li>
+                <p>주소: Solasia Bldg. Tsukiji, 4 Chome-13-8 Tsukiji, Chuo City, Tokyo 104-0045 일본</p>
+                <p>⭐별점: 4.7</p>
+                <p>주메뉴: 해산물 요리</p>
+                <p>영업 시간: 10:00 ~ 15:00</p>
+                <p>휴무일: 수요일, 목요일</p>
+                <p>1인당 예상 금액: 3,000 ~ 4,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chuo3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>그릴 본 긴자</li>
+                <p>주소: 일본 〒104-0061 Tokyo, Chuo City, Ginza, 7 Chome-14-1 荏原実業第一ビル 1F</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 카츠 산도</p>
+                <p>영업 시간: 11:00 ~ 20:00 (토요일은 17:00)</p>
+                <p>휴무일: 일요일</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chuo4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>긴자 우카이 테이</li>
+                <p>주소: 일본 〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome-15-8 時事通信ビル 1F</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 철판구이</p>
+                <p>영업 시간: 12:00 ~ 16:00 / 17:00 ~ 21:30</p>
+                <p>휴무일: 월요일, 일요일</p>
+                <p>1인당 예상 금액: 10,000엔 이상</p>
+                <a href="https://www.tablecheck.com/shops/ginzaukai-tei/reserve?utm_source=google"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/chuo5.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>gogono eats</li>
+                <p>주소: リッツ銀座 1F, 4 Chome-3-4 Tsukiji, Chuo City, Tokyo 104-0045 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 분식</p>
+                <p>영업 시간: 10:00 ~ 20:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 1,000엔</p>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="sumida" class="content-box" style="display: none;">
+      <h2>스미다구 맛집</h2>
+      <div class="content-row">
+            <img src="images/restaurant/sumida1.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>아사쿠사 규카츠</li>
+                <p>주소: 일본 〒111-0034 Tokyo, Taito City, Kaminarimon, 2 Chome-17-10 雷門上村ビル 1F・B1F</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 돈까스</p>
+                <p>영업 시간: 11:00 ~ 22:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/sumida2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>돈카츠 juroku</li>
+                <p>주소: 1 Chome-5-11 Kaminarimon, Taito City, Tokyo 111-0034 일본</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 돈까스</p>
+                <p>영업 시간: 11:30 ~ 14:30 / 18:00 ~ 20:30</p>
+                <p>휴무일: 월요일</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/sumida3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>아사쿠사 츠루지로 HANARE</li>
+                <p>주소: 1 Chome-36-2 Asakusa, Taito City, Tokyo 111-0032 일본</p>
+                <p>⭐별점: 4.6</p>
+                <p>주메뉴: 몬자야키</p>
+                <p>영업 시간: 11:30 ~ 15:00 / 17:00 ~ 22:00</p>
+                <p>휴무일: 수요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+                <a href="https://yoyaku.toreta.in/tsuru-hanare/#/"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="koto" class="content-box" style="display: none;">
+      <h2>고토구 맛집</h2>
+    <div class="content-row">
+            <img src="images/restaurant/koto1.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>규카츠 교토가츠규 오다이바</li>
+                <p>주소: 일본 〒135-0064 Tokyo, Koto City, Aomi, 1 Chome-1-10 ダイバーシティ東京プラザ 6F</p>
+                <p>⭐별점: 4.8</p>
+                <p>주메뉴: 일정식</p>
+                <p>영업 시간: 11:00 ~ 22:00</p>
+                <p>휴무일: 없음</p>
+                <p>1인당 예상 금액: 2,000 ~ 3,000엔</p>
+                <a href="https://tabelog.com/kr/tokyo/A1313/A131306/13236851/?cid=google_yoyaku"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/koto2.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>Taketonbo</li>
+                <p>주소: 1 Chome-6-1 Tomioka, Koto City, Tokyo 135-0047 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 일본식 서양 음식</p>
+                <p>영업 시간: 11:30 ~ 13:30 / 17:00 ~ 20:00</p>
+                <p>휴무일: 화요일</p>
+                <p>1인당 예상 금액: 1,000 ~ 2,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/koto3.png" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>스시 다이</li>
+                <p>주소: 6 Chome-5-1 Toyosu, Koto City, Tokyo 135-0061 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 스시</p>
+                <p>영업 시간: 06:00 ~ 14:00</p>
+                <p>휴무일: 수요일, 일요일</p>
+                <p>1인당 예상 금액: 5,000 ~ 6,000엔</p>
+            </ul>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <img src="images/restaurant/koto4.jpg" style="width: 250px; height: 170px;">
+            <div style="flex: 1;">
+            <ul>
+            <li>타지마 미트</li>
+                <p>주소: 1 Chome-4-1 Ogibashi, Koto City, Tokyo 135-0011 일본</p>
+                <p>⭐별점: 4.5</p>
+                <p>주메뉴: 야키니쿠</p>
+                <p>영업 시간: 11:00 ~ 23:00</p>
+                <p>휴무일: 월요일</p>
+                <a href="https://restaurant.ikyu.com/146123/?ikgo=2"><p>➜ 예약하러 가기</p></a>
+            </ul>
+            </div>
+        </div>
+
+    </div>
+  </main>
+</body>
+
+<script>
+
+    /* 카테고리 패널 열기 닫기 */
+      const menuBtn = document.querySelector(".menu-btn");
+      const panel = document.getElementById("category-panel");
+      const closeBtn = document.querySelector(".panel-close");
+
+      menuBtn.addEventListener("click", () => {
+        panel.classList.add("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        panel.classList.remove("active");
+      });
+
+      function toggleDistrict(contentId, btnElement) {
+      const contents = document.getElementsByClassName('content-box');
+      for (let i = 0; i < contents.length; i++) contents[i].style.display = 'none';
+      const buttons = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+      document.getElementById(contentId).style.display = 'block';
+      btnElement.classList.add('active');
+    }
+</script>
